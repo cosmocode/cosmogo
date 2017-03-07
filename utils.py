@@ -15,6 +15,6 @@ YES_NO = {
 
 
 def ask(question, default=False):
-    response = six.raw_input(question).strip()
+    response = six.moves.input(question).strip()
 
     return YES_NO.get(response, default)
