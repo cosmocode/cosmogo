@@ -67,7 +67,13 @@ class APIViewMixIn(object):
             else:
                 data, success, message, code = self.evaluate(success=False, message=error, code=500)
         else:
-            if isinstance(response, tuple):
+            if response is None:
+                data, success, message, code = self.evaluate(data=response)
+            elif isinstance(response, bool):
+                data, success, message, code = self.evaluate(success=response)
+            elif isinstance(response, int) and 100 <= response < 700:
+                data, success, message, code = self.evaluate(code=response)
+            elif isinstance(response, tuple):
                 data, success, message, code = self.evaluate(*response)
             elif isinstance(response, dict):
                 data, success, message, code = self.evaluate(data=response)
