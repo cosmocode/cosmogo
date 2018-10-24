@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.management import BaseCommand, CommandError, call_command
 
 from .initialiser import ENGINES, DatabaseInitialiserException
-from .utils import ask
+from .utils.confirmation import ask
 
 
 class InitDBCommand(BaseCommand):
