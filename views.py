@@ -2,7 +2,10 @@
 Module contains common view mixins.
 """
 
-from http.client import responses
+try:
+    from http.client import responses
+except ImportError:
+    from httplib import responses
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
