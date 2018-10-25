@@ -1,4 +1,8 @@
-def debug_toolbar(apps: list, middleware: list, *, active: bool = True, **config):
+def debug_toolbar(apps, middleware, active=True, **config):
+    """
+    Returns configured settings when debug toolbar is available.
+    """
+
     try:
         import debug_toolbar
     except ImportError:
@@ -30,4 +34,4 @@ def debug_toolbar(apps: list, middleware: list, *, active: bool = True, **config
             },
         )
 
-    return active, ips, apps, middleware, config
+    return apps, middleware, ips, active, config
