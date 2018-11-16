@@ -18,3 +18,6 @@ def ask(question, default=False):
     response = six.moves.input(question).strip()
 
     return YES_NO.get(response, default)
+
+
+confirm = ask
