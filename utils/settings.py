@@ -35,3 +35,20 @@ def debug_toolbar(apps, middleware, active=True, **config):
         )
 
     return apps, middleware, ips, active, config
+
+
+def password_validators(*validators):
+    return list(_parse_password_validators(validators))
+
+
+def _parse_password_validators(validators):
+    for validator in validators:
+        if isinstance(validator, (tuple, list)):
+            validator, options = validator
+        else:
+            validator, options = validator, {}
+
+        if '.' not in validator:
+            validator = 'django.contrib.auth.password_validation.%s' % validator
+
+        yield dict(NAME=validator, OPTIONS=options)
