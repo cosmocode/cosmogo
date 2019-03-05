@@ -6,7 +6,8 @@ HOST = 'https://gravatar.com'
 
 
 def get_gravatar_url(email, size=40, default=None):
-    identifier = hashlib.md5(email.lower()).hexdigest()
+    email = email.lower().encode('utf-8')
+    identifier = hashlib.md5(email).hexdigest()
     params = {'s': size}
 
     if default:
