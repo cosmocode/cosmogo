@@ -1,5 +1,6 @@
-from typing import Union, List
+from typing import Union, List, Type
 
+from django.db.models import Model
 from django.test import SimpleTestCase
 from django.urls import reverse
 
@@ -96,3 +97,14 @@ def build_formset_data(data: Data = None, prefix: str = None, total_forms: int =
     }
 
     return {**management_form_data, **forms_data}
+
+
+def admin_url(model: Type[Model], view: str, *args, **kwargs) -> str:
+    """
+    Return an url to an admin view.
+    """
+
+    opts = model._meta
+    info = opts.app_label, opts.model_name, view
+
+    return reverse('admin:%s_%s_%s' % info, args=args, kwargs=kwargs)
