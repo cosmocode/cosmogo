@@ -1,11 +1,27 @@
 from typing import Union, List, Type
 
+from django.apps import apps
+from django.conf import settings
 from django.db.models import Model
 from django.test import SimpleTestCase
 from django.urls import reverse
 
 Data = Union[List[dict], dict]
 Args = Union[tuple, list]
+
+
+def create_user(username: str, **kwargs):
+    model = apps.get_model(settings.AUTH_USER_MODEL)
+    password = kwargs.setdefault('password', 'P4sSW0rD')
+
+    kwargs.setdefault(model.USERNAME_FIELD, username)
+    kwargs.setdefault('email', f'{username}@test.case')
+
+    user = model.objects.create_user(**kwargs)
+
+    user.raw_password = password
+
+    return user
 
 
 def get_url(url: str, args: Args = None, kwargs: dict = None) -> str:
