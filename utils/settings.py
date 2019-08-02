@@ -1,3 +1,8 @@
+import subprocess
+
+from .path import working_directory
+
+
 def debug_toolbar(apps, middleware, active=True, **config):
     """
     Returns configured settings when debug toolbar is available.
@@ -52,3 +57,12 @@ def _parse_password_validators(validators):
             validator = 'django.contrib.auth.password_validation.%s' % validator
 
         yield dict(NAME=validator, OPTIONS=options)
+
+
+def get_git_commit(path, revision='HEAD'):
+    with working_directory(path):
+        output: bytes = subprocess.check_output(['git', 'rev-parse', revision])
+
+    output: str = output.decode('utf-8')
+
+    return str.strip(output)
