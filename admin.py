@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.utils.translation import ugettext_lazy as _
+
+from cosmogo.utils.gettext import trans
 
 
 class DefaultTabularInline(admin.TabularInline):
@@ -18,7 +19,7 @@ class AdminViewMixin:
             raise PermissionDenied
 
         if obj is None:
-            msg = _('%(name)s object with primary key %(key)r does not exist.')
+            msg = trans('%(name)s object with primary key %(key)r does not exist.')
             context = {'name': self.opts.verbose_name, 'key': object_id}
 
             raise Http404(msg % context)

@@ -1,0 +1,14 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Language: \n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#, python-format
+msgid "%(first)s and %(second)s"
+msgstr "%(first)s und %(second)s"
+
+#, python-format
+msgid "%(first)s or %(second)s"
+msgstr "%(first)s oder %(second)s"
