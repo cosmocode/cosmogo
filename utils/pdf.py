@@ -31,24 +31,20 @@ def is_local(url):
 
 
 def get_filepath(name):
-    if name.startswith(settings.STATIC_URL):
-        # we let the staticfiles_storage create the final url
-        # this makes sure urls that need to be processed by the
-        # storage first (e.g. adding a hash) still work properly
-        name = name.replace(staticfiles_storage.base_url, EMPTY)
-        url = staticfiles_storage.url(name)
-
-        name = url.replace(staticfiles_storage.base_url, EMPTY)
-        return finders.find(name)
-
     if name.startswith(settings.MEDIA_URL):
         name = name.replace(default_storage.base_url, EMPTY)
         return default_storage.path(name)
 
-    raise ValueError(
-        f'The relative URL {name} does not point to a location beginning '
-        f'with {settings.STATIC_URL} or {settings.MEDIA_URL}.'
-    )
+    # if it's not a media url we assume it is a static file
+
+    # we let the staticfiles_storage create the final url
+    # this makes sure urls that need to be processed by the
+    # storage first (e.g. adding a hash) still work properly
+    name = name.replace(staticfiles_storage.base_url, EMPTY)
+    url = staticfiles_storage.url(name)
+
+    name = url.replace(staticfiles_storage.base_url, EMPTY)
+    return finders.find(name)
 
 
 def get_url_description(url):
