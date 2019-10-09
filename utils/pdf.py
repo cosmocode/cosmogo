@@ -1,11 +1,12 @@
 import mimetypes
 import posixpath
 
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlparse
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.utils.lru_cache import lru_cache
 
@@ -15,21 +16,47 @@ from weasyprint import HTML, CSS, default_url_fetcher
 EMPTY = ''
 
 
+def is_local(url):
+    parsed = urlparse(url)
+
+    if parsed.netloc:
+        if url.startswith(settings.BASE_URL):
+            # the network location points to us so we treat that as local
+            return True
+
+        return False
+
+    if parsed.scheme and parsed.scheme not in ['http', 'https']:
+        # exclude e.g. "data:" and "file:" URIs
+        return False
+
+    return True
+
+
 def get_name(url, empty=EMPTY):
-    return url.replace(staticfiles_storage.base_url, empty)
+    if url.startswith(settings.STATIC_URL):
+        return url.replace(staticfiles_storage.base_url, empty)
+
+    if url.startswith(settings.MEDIA_URL):
+        return url.replace(default_storage.base_url, empty)
+
+    return url
 
 
 def get_filepath(name):
-    url = staticfiles_storage.url(name)
-    name = get_name(url)
+    name = get_name(name)
 
-    return finders.find(name)
+    if name.startswith(settings.STATIC_URL):
+        url = staticfiles_storage.url(name)
+        name = get_name(url)
+        return finders.find(name)
+
+    return default_storage.path(name)
 
 
 def get_url_description(url):
     result = urlsplit(url)
-    name = get_name(result.path)
-    filepath = get_filepath(name)
+    filepath = get_filepath(result.path)
     filename = posixpath.basename(filepath)
     mime_type, encoding = mimetypes.guess_type(filepath)
 
@@ -46,7 +73,7 @@ if not settings.DEBUG:
 
 
 def url_fetcher(url):
-    if url.startswith(settings.BASE_URL):
+    if is_local(url) or url.startswith(settings.BASE_URL):
         filepath, description = get_url_description(url)
         file_obj = open(filepath, 'rb')
 
