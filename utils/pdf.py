@@ -20,11 +20,8 @@ def is_local(url):
     parsed = urlparse(url)
 
     if parsed.netloc:
-        if url.startswith(settings.BASE_URL):
-            # the network location points to us so we treat that as local
-            return True
-
-        return False
+        # we treat a network location that points to us as local
+        return url.startswith(settings.BASE_URL)
 
     if parsed.scheme and parsed.scheme not in ['http', 'https']:
         # exclude e.g. "data:" and "file:" URIs
@@ -33,25 +30,25 @@ def is_local(url):
     return True
 
 
-def get_name(url, empty=EMPTY):
-    if url.startswith(settings.STATIC_URL):
-        return url.replace(staticfiles_storage.base_url, empty)
-
-    if url.startswith(settings.MEDIA_URL):
-        return url.replace(default_storage.base_url, empty)
-
-    return url
-
-
 def get_filepath(name):
-    name = get_name(name)
-
     if name.startswith(settings.STATIC_URL):
+        # we let the staticfiles_storage create the final url
+        # this makes sure urls that need to be processed by the
+        # storage first (e.g. adding a hash) still work properly
+        name = name.replace(staticfiles_storage.base_url, EMPTY)
         url = staticfiles_storage.url(name)
-        name = get_name(url)
+
+        name = url.replace(staticfiles_storage.base_url, EMPTY)
         return finders.find(name)
 
-    return default_storage.path(name)
+    if name.startswith(settings.MEDIA_URL):
+        name = name.replace(default_storage.base_url, EMPTY)
+        return default_storage.path(name)
+
+    raise ValueError(
+        f'The relative URL {name} does not point to a location beginning '
+        f'with {settings.STATIC_URL} or {settings.MEDIA_URL}.'
+    )
 
 
 def get_url_description(url):
