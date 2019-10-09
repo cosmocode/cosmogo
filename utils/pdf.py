@@ -73,7 +73,7 @@ if not settings.DEBUG:
 
 
 def url_fetcher(url):
-    if is_local(url) or url.startswith(settings.BASE_URL):
+    if is_local(url):
         filepath, description = get_url_description(url)
         file_obj = open(filepath, 'rb')
 
