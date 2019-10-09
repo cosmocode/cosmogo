@@ -1,11 +1,12 @@
 import mimetypes
 import posixpath
 
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlparse
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.utils.lru_cache import lru_cache
 
@@ -15,21 +16,40 @@ from weasyprint import HTML, CSS, default_url_fetcher
 EMPTY = ''
 
 
-def get_name(url, empty=EMPTY):
-    return url.replace(staticfiles_storage.base_url, empty)
+def is_local(url):
+    parsed = urlparse(url)
+
+    if parsed.netloc:
+        # we treat a network location that points to us as local
+        return url.startswith(settings.BASE_URL)
+
+    if parsed.scheme and parsed.scheme not in ['http', 'https']:
+        # exclude e.g. "data:" and "file:" URIs
+        return False
+
+    return True
 
 
 def get_filepath(name):
-    url = staticfiles_storage.url(name)
-    name = get_name(url)
+    if name.startswith(settings.MEDIA_URL):
+        name = name.replace(default_storage.base_url, EMPTY)
+        return default_storage.path(name)
 
+    # if it's not a media url we assume it is a static file
+
+    # we let the staticfiles_storage create the final url
+    # this makes sure urls that need to be processed by the
+    # storage first (e.g. adding a hash) still work properly
+    name = name.replace(staticfiles_storage.base_url, EMPTY)
+    url = staticfiles_storage.url(name)
+
+    name = url.replace(staticfiles_storage.base_url, EMPTY)
     return finders.find(name)
 
 
 def get_url_description(url):
     result = urlsplit(url)
-    name = get_name(result.path)
-    filepath = get_filepath(name)
+    filepath = get_filepath(result.path)
     filename = posixpath.basename(filepath)
     mime_type, encoding = mimetypes.guess_type(filepath)
 
@@ -46,7 +66,7 @@ if not settings.DEBUG:
 
 
 def url_fetcher(url):
-    if url.startswith(settings.BASE_URL):
+    if is_local(url):
         filepath, description = get_url_description(url)
         file_obj = open(filepath, 'rb')
 
