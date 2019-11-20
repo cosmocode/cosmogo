@@ -31,10 +31,10 @@ TRUE_FALSE = {
 }
 
 
-def ask(question, default=False):
+def ask(question, default=False, truthy=None):
     response = six.moves.input(question).strip()
 
-    return YES_NO.get(response, default)
+    return (truthy or YES_NO).get(response, default)
 
 
 confirm = ask
