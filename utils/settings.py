@@ -1,6 +1,20 @@
+import os
 import subprocess
 
+from .confirmation import TRUE_FALSE
 from .path import working_directory
+
+
+def env(key, default=None, parser=str):
+    value = os.environ.get(key)
+
+    if value is None:
+        return default
+
+    return parser(value)
+
+
+truthy = TRUE_FALSE.get
 
 
 def debug_toolbar(apps, middleware, active=True, **config):
