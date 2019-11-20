@@ -7,8 +7,11 @@ DELIMITER = ', '
 
 TRANSLITERATIONS = (
     ('ä', 'ae'),
+    ('Ä', 'Ae'),
     ('ö', 'oe'),
+    ('Ö', 'Oe'),
     ('ü', 'ue'),
+    ('Ü', 'Ue'),
     ('ß', 'ss'),
 )
 
