@@ -1,16 +1,33 @@
 from django.utils import six
 
 YES_NO = {
-    '1': True,
     'y': True,
     'Y': True,
     'yes': True,
     'YES': True,
-    '0': False,
     'n': False,
     'N': False,
     'no': False,
     'NO': False,
+}
+
+TRUE_FALSE = {
+    **YES_NO,
+    1: True,
+    '1': True,
+    True: True,
+    'TRUE': True,
+    'True': True,
+    'true': True,
+    't': True,
+    0: False,
+    '0': False,
+    False: False,
+    'FALSE': False,
+    'False': False,
+    'false': False,
+    'f': False,
+    None: False,
 }
 
 
