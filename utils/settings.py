@@ -2,7 +2,7 @@ import os
 import subprocess
 
 from .confirmation import TRUE_FALSE
-from .path import working_directory
+from .git import get_commit
 
 
 def env(key, default=None, parser=str):
@@ -74,9 +74,4 @@ def _parse_password_validators(validators):
 
 
 def get_git_commit(path, revision='HEAD'):
-    with working_directory(path):
-        output: bytes = subprocess.check_output(['git', 'rev-parse', revision])
-
-    output: str = output.decode('utf-8')
-
-    return str.strip(output)
+    return get_commit(path, revision=revision)
