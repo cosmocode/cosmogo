@@ -13,6 +13,7 @@ except ImportError:
 def maketempdir(onerror=None, **kwargs):
     directory = tempfile.mkdtemp(**kwargs)
 
-    yield Path(directory)
-
-    shutil.rmtree(directory, ignore_errors=onerror is None, onerror=onerror)
+    try:
+        yield Path(directory)
+    finally:
+        shutil.rmtree(directory, ignore_errors=onerror is None, onerror=onerror)
