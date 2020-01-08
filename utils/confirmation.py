@@ -1,5 +1,3 @@
-from django.utils import six
-
 YES_NO = {
     'y': True,
     'Y': True,
@@ -32,7 +30,7 @@ TRUE_FALSE = {
 
 
 def ask(question, default=False, truthy=None):
-    response = six.moves.input(question).strip()
+    response = input(question).strip()
 
     return (truthy or YES_NO).get(response, default)
 
