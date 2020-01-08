@@ -1,7 +1,11 @@
 import json
 
 from django.conf import settings
-from django.utils.lru_cache import lru_cache
+
+try:
+    from django.utils.lru_cache import lru_cache
+except ImportError:
+    from functools import lru_cache
 
 KEY = 'assetsByChunkName'
 
