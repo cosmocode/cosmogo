@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError, call_command
 
-from .initializer import ENGINES, DatabaseInitializerException
-from .utils.confirmation import ask
+from cosmogo.initializer import ENGINES, DatabaseInitializerException
+from cosmogo.utils.confirmation import ask
 
 
 class InitDBCommand(BaseCommand):
