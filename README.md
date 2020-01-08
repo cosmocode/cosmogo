@@ -3,7 +3,7 @@
 ## init-db
 
 To use the init-db command create an init-db.py file in your app's command module.
-Import the `InitDBCommand` class and create a class `Command` inherting from the `InitDBCommand`.
+Import the `InitDBCommand` class and create a class `Command` inheriting from the `InitDBCommand`.
 You can add your needed fixtures or overwrite the defaults for the parameters like so:
 
 ```
