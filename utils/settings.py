@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 from .confirmation import TRUE_FALSE
 from .git import get_commit
