@@ -1,6 +1,6 @@
 from django.db import connections
 
-from .base import DatabaseInitialiser, DatabaseInitialiserException
+from .base import DatabaseInitialiser, DatabaseInitializerException
 
 
 class PostgresInitialiser(DatabaseInitialiser):
@@ -11,7 +11,7 @@ class PostgresInitialiser(DatabaseInitialiser):
         try:
             import psycopg2
         except ImportError as error:
-            raise DatabaseInitialiserException(error, alias=self.alias, engine=self.engine)
+            raise DatabaseInitializerException(error, alias=self.alias, engine=self.engine)
 
         self.psycopg2 = psycopg2
 
@@ -53,7 +53,7 @@ class PostgresInitialiser(DatabaseInitialiser):
                 self.stderr.write('Database %s already exists. Please make sure it is empty.' % databasename)
 
             elif error.pgcode == '42501':
-                raise DatabaseInitialiserException(
+                raise DatabaseInitializerException(
                     'Role "%(role)s" has no permission to create database "%(database)s". '
                     'Please add permission by running the following command in psql '
                     'console: "ALTER ROLE "%(role)s" WITH %(privilege)s;"' % {
@@ -66,14 +66,14 @@ class PostgresInitialiser(DatabaseInitialiser):
                 )
 
             elif error.pgcode:
-                raise DatabaseInitialiserException(
+                raise DatabaseInitializerException(
                     '[%s] %s' % (error.pgcode, error),
                     alias=self.alias,
                     engine=self.engine,
                 )
 
             else:
-                raise DatabaseInitialiserException(error, alias=self.alias, engine=self.engine)
+                raise DatabaseInitializerException(error, alias=self.alias, engine=self.engine)
 
         finally:
             if connection is not None:

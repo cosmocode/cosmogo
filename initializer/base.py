@@ -1,10 +1,10 @@
-class DatabaseInitialiserException(Exception):
+class DatabaseInitializerException(Exception):
 
     def __init__(self, *args, alias, engine, **kwargs):
         self.alias = alias
         self.engine = engine
 
-        super(DatabaseInitialiserException, self).__init__(*args, **kwargs)
+        super(DatabaseInitializerException, self).__init__(*args, **kwargs)
 
 
 class DatabaseInitialiser(object):

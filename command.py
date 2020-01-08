@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError, call_command
 
-from .initialiser import ENGINES, DatabaseInitialiserException
+from .initializer import ENGINES, DatabaseInitializerException
 from .utils.confirmation import ask
 
 
@@ -61,18 +61,18 @@ class InitDBCommand(BaseCommand):
     def setup_database(self, alias, drop, verbosity, interactive):
         config = settings.DATABASES[alias]
         module, engine = config['ENGINE'].rsplit('.', 1)
-        initialiser = self.ENGINES.get(engine)
+        initializer = self.ENGINES.get(engine)
 
-        if initialiser is None:
+        if initializer is None:
             raise CommandError('Could not set up database %s. Engine %s is currently not supported.' % (alias, engine))
 
         if verbosity > 0:
             self.stdout.write('Setting up database %s ...' % alias)
 
         try:
-            with initialiser(self, alias, drop, verbosity, interactive, config):
+            with initializer(self, alias, drop, verbosity, interactive, config):
                 self.call_command('migrate', verbosity=verbosity, interactive=interactive, database=alias)
-        except DatabaseInitialiserException as error:
+        except DatabaseInitializerException as error:
             raise CommandError('Could not initialise database %s: %s' % (alias, error))
 
     def load_fixtures(self, load, verbosity):

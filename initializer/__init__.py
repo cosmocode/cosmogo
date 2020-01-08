@@ -1,10 +1,10 @@
-from .base import DatabaseInitialiserException
+from .base import DatabaseInitializerException
 from .postgres import PostgresInitialiser
 from .sqlite import SQLiteInitialiser
 
 __all__ = [
     'ENGINES',
-    'DatabaseInitialiserException',
+    'DatabaseInitializerException',
 ]
 
 ENGINES = {
