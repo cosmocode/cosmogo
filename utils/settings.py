@@ -74,3 +74,19 @@ def _parse_password_validators(validators):
 
 def get_git_commit(path, revision='HEAD'):
     return get_commit(path, revision=revision)
+
+
+def configure_sentry(dsn, environment, release, celery=False, **kwargs):
+    from sentry_sdk import init
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    integrations = [DjangoIntegration()]
+
+    if celery:
+        from sentry_sdk.integrations.celery import CeleryIntegration
+
+        integrations.append(CeleryIntegration())
+
+    kwargs['integrations'] = integrations
+
+    return init(dsn=dsn, environment=environment, release=release, **kwargs)
