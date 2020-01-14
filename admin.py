@@ -12,10 +12,10 @@ class DefaultTabularInline(admin.TabularInline):
 
 class AdminViewMixin:
 
-    def get_object_for_change(self: admin.ModelAdmin, request, object_id):
+    def get_object_for(self: admin.ModelAdmin, permission: str, request, object_id):
         obj = self.get_object(request, object_id)
 
-        if not self.has_change_permission(request, obj=obj):
+        if not getattr(self, f'has_{permission}_permission')(request, obj=obj):
             raise PermissionDenied
 
         if obj is None:
@@ -25,3 +25,9 @@ class AdminViewMixin:
             raise Http404(msg % context)
 
         return obj
+
+    def get_object_for_change(self, request, object_id):
+        return self.get_object_for('change', request, object_id)
+
+    def get_object_for_delete(self, request, object_id):
+        return self.get_object_for('delete', request, object_id)
