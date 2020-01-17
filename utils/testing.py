@@ -2,12 +2,25 @@ from typing import Union, List, Type
 
 from django.apps import apps
 from django.conf import settings
+from django.core.management import call_command as django_call_command
 from django.db.models import Model
 from django.test import SimpleTestCase
 from django.urls import reverse
 
 Data = Union[List[dict], dict]
 Args = Union[tuple, list]
+
+
+def call_command(*args, **kwargs):
+    """
+    Silence all output of commands.
+    """
+
+    with open('/dev/null', 'w') as devnull:
+        defaults = dict(stdout=devnull, stderr=devnull)
+        defaults.update(kwargs)
+
+        return django_call_command(*args, **defaults)
 
 
 def create_user(username: str, **kwargs):
