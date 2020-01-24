@@ -27,8 +27,8 @@ def create_user(username: str, **kwargs):
     model = apps.get_model(settings.AUTH_USER_MODEL)
     password = kwargs.setdefault('password', 'P4sSW0rD')
 
-    kwargs.setdefault(model.USERNAME_FIELD, username)
     kwargs.setdefault('email', f'{username}@test.case')
+    kwargs.setdefault(model.USERNAME_FIELD, username)
 
     user = model.objects.create_user(**kwargs)
 
