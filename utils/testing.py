@@ -1,4 +1,5 @@
 from typing import Union, List, Type
+from unittest.mock import patch
 
 from django.apps import apps
 from django.conf import settings
@@ -6,6 +7,9 @@ from django.core.management import call_command as django_call_command
 from django.db.models import Model
 from django.test import SimpleTestCase
 from django.urls import reverse
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import make_aware, is_aware
+
 
 Data = Union[List[dict], dict]
 Args = Union[tuple, list]
@@ -137,3 +141,12 @@ def admin_url(model: Type[Model], view: str, *args, **kwargs) -> str:
     info = opts.app_label, opts.model_name, view
 
     return reverse('admin:%s_%s_%s' % info, args=args, kwargs=kwargs)
+
+
+def patch_now(now):
+    value = parse_datetime(now)
+
+    if not is_aware(value):
+        value = make_aware(value)
+
+    return patch('django.utils.timezone.now', return_value=value)
