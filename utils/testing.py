@@ -64,6 +64,15 @@ def login(test_case: SimpleTestCase, user=None, password: str = None) -> bool:
     return test_case.client.login(username=user.username, password=password)
 
 
+def get_handler(test_case: SimpleTestCase, method: str = None, **data):
+    if data:
+        method = str.lower(method or 'POST')
+    else:
+        method = str.lower(method or 'GET')
+
+    return getattr(test_case.client, method)
+
+
 def request(test_case: SimpleTestCase, url: str, status_code: int = None, expected_url: str = None,
             args: Args = None, kwargs: dict = None, headers: dict = None, msg: str = None, **data):
     """
@@ -77,13 +86,11 @@ def request(test_case: SimpleTestCase, url: str, status_code: int = None, expect
     When posting without parameters just pass post=True.
     """
 
+    handler = get_handler(test_case, **data)
     url = get_url(url, args, kwargs)
     headers = headers or {}
 
-    if data:
-        response = test_case.client.post(url, data=data, **headers)
-    else:
-        response = test_case.client.get(url, **headers)
+    response = handler(url, data=data or None, **headers)
 
     status_code = status_code or 200
     msg = msg or getattr(response, 'content', None)
