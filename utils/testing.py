@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from typing import Union, List, Type
 from unittest.mock import patch
 
@@ -5,11 +6,12 @@ from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command as django_call_command
 from django.db.models import Model
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware, is_aware
 
+from .tempdir import maketempdir
 
 Data = Union[List[dict], dict]
 Args = Union[tuple, list]
@@ -157,3 +159,10 @@ def patch_now(now):
         value = make_aware(value)
 
     return patch('django.utils.timezone.now', return_value=value)
+
+
+@contextmanager
+def temporary_media_storage(**kwargs):
+    with maketempdir(**kwargs) as directory:
+        with override_settings(MEDIA_ROOT=directory):
+            yield directory
