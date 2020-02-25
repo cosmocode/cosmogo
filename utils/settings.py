@@ -90,3 +90,22 @@ def configure_sentry(dsn, environment, release, celery=False, **kwargs):
     kwargs['integrations'] = integrations
 
     return init(dsn=dsn, environment=environment, release=release, **kwargs)
+
+
+REDIS_DEFAULTS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 0,
+}
+
+
+def redis(**kwargs):
+    defaults = dict(REDIS_DEFAULTS, **kwargs)
+
+    for name in list(defaults):
+        default = defaults.get(name)
+        parser = type(default)
+        variable = str.upper(f'REDIS_{name}')
+        defaults[name] = env(variable, default, parser)
+
+    return 'redis://%(host)s:%(port)s/%(db)s' % defaults
