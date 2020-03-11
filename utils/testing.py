@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.apps import apps
 from django.conf import settings
+from django.contrib import admin
 from django.core.management import call_command as django_call_command
 from django.db.models import Model
 from django.test import SimpleTestCase, override_settings
@@ -141,15 +142,16 @@ def build_formset_data(data: Data = None, prefix: str = None, total_forms: int =
     return {**management_form_data, **forms_data}
 
 
-def admin_url(model: Type[Model], view: str, *args, **kwargs) -> str:
+def admin_url(model: Type[Model], view: str, *args, site=None, **kwargs) -> str:
     """
     Return an url to an admin view.
     """
 
     opts = model._meta
-    info = opts.app_label, opts.model_name, view
+    site = site or admin.site
+    info = site.name, opts.app_label, opts.model_name, view
 
-    return reverse('admin:%s_%s_%s' % info, args=args, kwargs=kwargs)
+    return reverse('%s:%s_%s_%s' % info, args=args, kwargs=kwargs)
 
 
 def patch_now(now):
