@@ -55,6 +55,18 @@ def debug_toolbar(apps, middleware, active=True, **config):
     return apps, middleware, ips, active, config
 
 
+def django_extensions(apps, active=True):
+    try:
+        import django_extensions
+    except ImportError:
+        active = False
+
+    if active:
+        apps += ['django_extensions']
+
+    return apps
+
+
 def password_validators(*validators):
     return list(_parse_password_validators(validators))
 
