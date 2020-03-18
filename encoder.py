@@ -1,3 +1,5 @@
+from pathlib import PurePath
+
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
@@ -9,12 +11,18 @@ class AdvancedJSONEncoder(DjangoJSONEncoder):
     data types when working with django.
     """
 
-    def default(self, o):
+    TEXT_TYPES = (
+        Exception,
+        Promise,
+        PurePath,
+    )
+
+    def default(self, o, texts=TEXT_TYPES):
         """
         Converts exceptions and promises to strings.
         """
 
-        if isinstance(o, (Exception, Promise)):
+        if isinstance(o, texts):
             return force_text(o)
 
         return super(AdvancedJSONEncoder, self).default(o)
