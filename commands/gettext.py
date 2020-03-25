@@ -122,6 +122,7 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
         pofile = polib.pofile(filepath, wrapwidth=cls.WRAP_WIDTH)
 
         cls.set_meta_language(pofile, language)
+        cls.set_header(pofile, language, domain)
 
         for key in list(pofile.metadata):
             if key not in cls.META:
@@ -135,6 +136,10 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
     def set_meta_language(pofile, language, key='Language'):
         if not pofile.metadata.get(key):
             pofile.metadata[key] = language
+
+    @classmethod
+    def set_header(cls, pofile, language, domain):
+        pass  # hook to set the header of the pofile
 
 
 class CompileTranslationsCommand(GetTextCommandMixin, CompileMessagesCommand):
