@@ -41,7 +41,8 @@ def is_local(url):
 
 def get_filepath(name):
     if name.startswith(settings.MEDIA_URL):
-        name = name.replace(default_storage.base_url, EMPTY)
+        name = get_name(name, default_storage)
+
         return default_storage.path(name)
 
     # if it's not a media url we assume it is a static file
@@ -49,11 +50,17 @@ def get_filepath(name):
     # we let the staticfiles_storage create the final url
     # this makes sure urls that need to be processed by the
     # storage first (e.g. adding a hash) still work properly
-    name = name.replace(staticfiles_storage.base_url, EMPTY)
+    name = get_name(name)
     url = staticfiles_storage.url(name)
+    name = get_name(url)
 
-    name = url.replace(staticfiles_storage.base_url, EMPTY)
     return finders.find(name)
+
+
+def get_name(url, storage=None, empty=EMPTY):
+    storage = storage or staticfiles_storage
+
+    return url.replace(storage.base_url, empty)
 
 
 def get_url_description(url):
