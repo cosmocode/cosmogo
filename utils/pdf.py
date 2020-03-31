@@ -1,6 +1,7 @@
 import mimetypes
 import posixpath
 
+from functools import lru_cache
 from urllib.parse import urlsplit, urlparse
 
 from django.conf import settings
@@ -8,7 +9,6 @@ from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
-from django.utils.lru_cache import lru_cache
 
 from weasyprint import HTML, CSS, default_url_fetcher
 
