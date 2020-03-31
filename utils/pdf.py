@@ -10,10 +10,19 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 
-from weasyprint import HTML, CSS, default_url_fetcher
-
-
 EMPTY = ''
+
+try:
+    from weasyprint import HTML, CSS, default_url_fetcher
+except ImportError:
+    if not settings.DEBUG:
+        # make sure missing WeasyPrint installation is
+        # noticed early in production environments
+        raise
+
+    # WeasyPrint has a lot of requirements so
+    # it's okay to not have it in development
+    HTML = CSS = default_url_fetcher = None
 
 
 def is_local(url):
@@ -76,6 +85,8 @@ def url_fetcher(url):
 
 
 def render(template, context, style=None, request=None, target=None, **options):
+    assert HTML and CSS, 'WeasyPrint is not installed. You cannot use any print features.'
+
     options.setdefault('base_url', settings.BASE_URL)
     options.setdefault('url_fetcher', url_fetcher)
 
