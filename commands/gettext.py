@@ -9,6 +9,8 @@ from django.conf import settings
 from django.core.management import BaseCommand, call_command
 from django.core.management.commands.compilemessages import Command as CompileMessagesCommand
 
+from cosmogo.utils.path import cd
+
 
 class GetTextCommandMixin:
     APPLICATION: str
@@ -149,11 +151,14 @@ class CompileTranslationsCommand(GetTextCommandMixin, CompileMessagesCommand):
     virtualenv directory.
     """
 
-    def handle(self, **options):
+    def add_arguments(self, parser):
+        super(CompileTranslationsCommand, self).add_arguments(parser)
+        parser.add_argument('--directory', '-d', default=self.APPLICATION)
+
+    def handle(self, *, directory, **options):
         """
         Changes to the application directory before compiling translation files.
         """
 
-        os.chdir(self.APPLICATION)
-
-        return super(CompileTranslationsCommand, self).handle(**options)
+        with cd(directory):
+            return super(CompileTranslationsCommand, self).handle(**options)
