@@ -9,9 +9,13 @@ from .filepath import FilePath
 def working_directory(path: FilePath):
     current = os.getcwd()
 
-    yield os.chdir(path)
+    try:
+        yield os.chdir(path)
+    finally:
+        os.chdir(current)
 
-    os.chdir(current)
+
+cd = working_directory
 
 
 def ensure_directory(filepath: FilePath):
