@@ -40,7 +40,7 @@ def is_local(url):
 
 
 def get_filepath(name):
-    if name.startswith(settings.MEDIA_URL):
+    if settings.MEDIA_URL and name.startswith(settings.MEDIA_URL):
         name = get_name(name, default_storage)
 
         return default_storage.path(name)
