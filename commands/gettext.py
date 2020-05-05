@@ -67,8 +67,10 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
 
         # We will create translation files
         # in the app dir and not globally.
-        os.chdir(self.APPLICATION)
+        with cd(self.APPLICATION):
+            return self.run(languages, domains, **options)
 
+    def run(self, languages, domains, **options):
         # The locale dir isn't created automatically by makemessages.
         os.makedirs(self.LOCALE_DIR, exist_ok=True)
 
