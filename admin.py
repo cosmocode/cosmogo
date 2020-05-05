@@ -7,12 +7,12 @@ from django.utils.safestring import mark_safe
 from cosmogo.utils.gettext import trans
 from cosmogo.utils.testing import admin_url
 
-DEFAULT_LINK_TEMPLATE = '<a href="{url}">{obj}</a>'
+DEFAULT_LINK_TEMPLATE = '<a href="{url}">{label}</a>'
 
 
-def admin_link(obj: Model, view='change', site=None, template=DEFAULT_LINK_TEMPLATE):
+def admin_link(obj: Model, view='change', site=None, label=None, template=DEFAULT_LINK_TEMPLATE):
     url = admin_url(type(obj), view, obj.pk, site=site)
-    link = template.format(url=url, obj=obj)
+    link = template.format(url=url, obj=obj, label=label or obj)
 
     return mark_safe(link)
 
