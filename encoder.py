@@ -1,4 +1,5 @@
 from pathlib import PurePath
+from uuid import UUID
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.encoding import force_text
@@ -15,6 +16,7 @@ class AdvancedJSONEncoder(DjangoJSONEncoder):
         Exception,
         Promise,
         PurePath,
+        UUID,
     )
 
     def default(self, o, texts=TEXT_TYPES):
