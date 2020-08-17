@@ -2,8 +2,12 @@ from pathlib import PurePath
 from uuid import UUID
 
 from django.core.serializers.json import DjangoJSONEncoder
-from django.utils.encoding import force_text
 from django.utils.functional import Promise
+
+try:
+    from django.utils.encoding import force_str
+except ImportError:
+    from django.utils.encoding import force_text as force_str
 
 
 class AdvancedJSONEncoder(DjangoJSONEncoder):
@@ -25,6 +29,6 @@ class AdvancedJSONEncoder(DjangoJSONEncoder):
         """
 
         if isinstance(o, texts):
-            return force_text(o)
+            return force_str(o)
 
         return super(AdvancedJSONEncoder, self).default(o)
