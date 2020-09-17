@@ -43,7 +43,10 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
     ]
 
     DOMAINS = [
-        ('django', None),
+        ('django', [
+            'html', 'txt', 'py',  # default
+            'plain', 'subject',  # mails
+        ]),
         ('djangojs', None),
     ]
 
