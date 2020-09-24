@@ -112,6 +112,8 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
 
     @staticmethod
     def call_command(**kwargs):
+        kwargs.pop('skip_checks', None)  # makemessages doesn't take this argument
+
         return call_command('makemessages', **kwargs)
 
     @classmethod
