@@ -1,6 +1,12 @@
 from django.utils.text import slugify as django_slugify
 from django.utils.translation import gettext_lazy as _
 
+try:
+    from unidecode import unidecode
+except ImportError:
+    def unidecode(value):
+        return value
+
 CONJUNCTION_AND = _('%(first)s and %(second)s')
 CONJUNCTION_OR = _('%(first)s or %(second)s')
 DELIMITER = ', '
@@ -30,6 +36,7 @@ def enumeration(words, conjunction=CONJUNCTION_AND, delimiter=DELIMITER):
 
 def slugify(value, transliterations=TRANSLITERATIONS):
     value = transliterate(value, transliterations=transliterations)
+    value = unidecode(value)
 
     return django_slugify(value)
 
