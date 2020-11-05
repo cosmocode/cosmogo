@@ -2,6 +2,8 @@
 Module contains common view mixins.
 """
 
+import logging
+
 try:
     from http.client import responses
 except ImportError:
@@ -21,6 +23,7 @@ class APIViewMixIn(object):
 
     DEBUG = settings.DEBUG
     encoder = AdvancedJSONEncoder
+    logger = logging.getLogger(__name__)
 
     @classmethod
     def evaluate(cls, data=None, success=True, message=None, code=None):
@@ -33,17 +36,11 @@ class APIViewMixIn(object):
             assert isinstance(success, bool), 'success should be a boolean'
             assert code is None or isinstance(code, int), 'code should be an integer'
         except AssertionError as error:
-            if cls.DEBUG:
-                raise ImproperlyConfigured(
-                    'A view inherting from %s should return a tuple consisting of a data dictionary, '
-                    'a status code integer and a boolean success flag. %s did not: %s.' % (
-                        APIViewMixIn.__name__,
-                        cls.__name__,
-                        error
-                    )
-                )
-            else:
-                return {}, False, responses.get(500), 500
+            return cls.server_error(
+                'A view inheriting from %s should return a tuple consisting of a data dictionary, '
+                'a status code integer and a boolean success flag. %s did not: %s.',
+                APIViewMixIn.__name__, cls.__name__, error
+            )
 
         data = data or {}
         code = code or {True: 200, False: 400}.get(success)
@@ -65,10 +62,7 @@ class APIViewMixIn(object):
         except NotImplementedError:
             return self.http_method_not_allowed(request, *args, **kwargs)
         except Exception as error:
-            if self.DEBUG:
-                raise
-            else:
-                data, success, message, code = self.evaluate(success=False, message=error, code=500)
+            data, success, message, code = self.server_error('Internal Server Error: %s', error, error=error)
         else:
             if response is None:
                 data, success, message, code = self.evaluate(data=response)
@@ -82,17 +76,11 @@ class APIViewMixIn(object):
                 data, success, message, code = self.evaluate(data=response)
             elif isinstance(response, HttpResponse):
                 return response
-            elif self.DEBUG:
-                raise ImproperlyConfigured(
-                    'A view inherting from %s should return a tuple, '
-                    'a dict or a HttpResponse. %s did return %s.' % (
-                        APIViewMixIn.__name__,
-                        self.__class__.__name__,
-                        response.__class__.__name__,
-                    )
-                )
             else:
-                data, success, message, code = self.evaluate(success=False, code=500)
+                data, success, message, code = self.server_error(
+                    'A view inheriting from %s should return a tuple, a dict or a HttpResponse. %s did return %s.',
+                    APIViewMixIn.__name__, self.__class__.__name__, response.__class__.__name__
+                )
 
         return self.respond(data, success, message, code)
 
@@ -106,3 +94,21 @@ class APIViewMixIn(object):
             encoder=self.encoder,
             status=code,
         )
+
+    @classmethod
+    def server_error(cls, msg, *args, error=None):
+        if cls.DEBUG:
+            if error:
+                raise
+            else:
+                raise ImproperlyConfigured(msg % args)
+
+        if error:
+            cls.logger.exception(msg, *args, exc_info=error)
+        else:
+            cls.logger.error(msg, *args)
+
+        return cls.evaluate(success=False, message=error, code=500)
+
+
+APIViewMixin = APIViewMixIn
