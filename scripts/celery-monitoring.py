@@ -14,18 +14,24 @@ UNKNOWN = 3
 def main(filepath, warning, critical):
     try:
         mtime = os.path.getmtime(filepath)
-    except os.error:
-        return sys.exit(UNKNOWN)
+    except os.error as error:
+        return report(UNKNOWN, error)
 
     now = time.time()
     seconds = now - mtime
+    message = '%s is %.1fs old.' % (filepath, seconds)
 
     if seconds < warning:
-        return sys.exit(OK)
+        return report(OK, message)
     elif seconds < critical:
-        return sys.exit(WARNING)
+        return report(WARNING, message)
     else:
-        return sys.exit(CRITICAL)
+        return report(CRITICAL, message)
+
+
+def report(status, message):
+    print(message)
+    sys.exit(status)
 
 
 if __name__ == '__main__':
