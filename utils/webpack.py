@@ -30,4 +30,4 @@ def get_asset(name, path=None):
     Returns the asset path for a given asset name.
     """
 
-    return get_mapping(path or settings.WEBPACK_ASSETS_MAP_PATH).get(name)
+    return get_mapping(path or settings.WEBPACK_ASSETS_MAP_PATH).get(f'{name}')
