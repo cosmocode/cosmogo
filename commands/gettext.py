@@ -109,7 +109,7 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
         Assume all extensions for given domains.
         """
 
-        return domains and [(domain, None) for domain in domains] or self.DOMAINS
+        return domains and [(domain, dict(self.DOMAINS).get(domain)) for domain in domains] or self.DOMAINS
 
     @staticmethod
     def call_command(**kwargs):
