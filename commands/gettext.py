@@ -61,8 +61,9 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-l', dest='languages', action='append', choices=self.language_codes)
         parser.add_argument('-d', dest='domains', action='append', choices=list(dict(self.DOMAINS)))
+        parser.add_argument('--no-fuzzy', dest='fuzzy', action='store_true', default=False)
 
-    def handle(self, languages, domains, **options):
+    def handle(self, languages, domains, fuzzy, **options):
         """
         Creates and cleans the translation files
         for every domain and configured language.
@@ -71,9 +72,9 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
         # We will create translation files
         # in the app dir and not globally.
         with cd(self.APPLICATION):
-            return self.run(languages, domains, **options)
+            return self.run(languages, domains, fuzzy, **options)
 
-    def run(self, languages, domains, **options):
+    def run(self, languages, domains, fuzzy, **options):
         # The locale dir isn't created automatically by makemessages.
         os.makedirs(self.LOCALE_DIR, exist_ok=True)
 
@@ -94,7 +95,7 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
 
         for language in languages:
             for domain, extensions in domains:
-                self.clean(language, domain)
+                self.clean(language, domain, fuzzy=fuzzy)
 
     def get_languages(self, languages):
         """
@@ -117,7 +118,7 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
         return call_command('makemessages', **kwargs)
 
     @classmethod
-    def clean(cls, language, domain):
+    def clean(cls, language, domain, fuzzy=False):
         """
         We use the polib library to parse the output
         file and remove all unnecessary meta data.
@@ -137,9 +138,23 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
             if key not in cls.META:
                 pofile.metadata.pop(key)
 
+        if fuzzy:
+            for entry in pofile:
+                if entry.fuzzy:
+                    cls.clean_fuzzy(entry)
+
         pofile.save(filepath)
 
         return True
+
+    @staticmethod
+    def clean_fuzzy(entry: polib.POEntry):
+        entry.flags.remove('fuzzy')
+        entry.msgstr = ''
+        entry.msgstr_plural = {}
+        entry.previous_msgctxt = None
+        entry.previous_msgid = None
+        entry.previous_msgid_plural = None
 
     @staticmethod
     def set_meta_language(pofile, language, key='Language'):
