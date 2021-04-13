@@ -43,3 +43,21 @@ class AdminViewMixin:
 
     def get_object_for_delete(self, request, object_id):
         return self.get_object_for('delete', request, object_id)
+
+
+class ReadOnlyAdminMixin:
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class ReadOnlyModelAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
+    """
+    Immutable admin for a given model.
+    """
