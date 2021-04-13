@@ -1,4 +1,9 @@
-def is_from_cosmocode(user):
+COSMOCODE_DOMAINS = (
+    'cosmocode.de',
+    'cosmoco.de',
+)
+
+def is_from_cosmocode(user):  # type: (...) -> bool
     if user.is_anonymous or not user.is_superuser:
         return False
 
@@ -12,4 +17,4 @@ def is_from_cosmocode(user):
     except ValueError:
         return False
 
-    return domain == 'cosmocode.de'
+    return domain in COSMOCODE_DOMAINS
