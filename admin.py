@@ -47,7 +47,8 @@ class AdminViewMixin:
 
 class ReadOnlyAdminMixin:
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, opj=None):
+        # For `InlineModelAdmin` the parent object may be passed via `obj`.
         return False
 
     def has_change_permission(self, request, obj=None):
