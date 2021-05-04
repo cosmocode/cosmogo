@@ -63,7 +63,7 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
         parser.add_argument('-d', dest='domains', action='append', choices=list(dict(self.DOMAINS)))
         parser.add_argument('--no-fuzzy', dest='fuzzy', action='store_true', default=False)
 
-    def handle(self, languages, domains, fuzzy, **options):
+    def handle(self, languages, domains, fuzzy=False, **options):
         """
         Creates and cleans the translation files
         for every domain and configured language.
