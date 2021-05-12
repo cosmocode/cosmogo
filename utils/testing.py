@@ -30,8 +30,8 @@ def call_command(*args, **kwargs):
         return django_call_command(*args, **defaults)
 
 
-def create_user(username: str, **kwargs):
-    model = apps.get_model(settings.AUTH_USER_MODEL)
+def create_user(username: str, *, model=None, **kwargs):
+    model = model or apps.get_model(settings.AUTH_USER_MODEL)
     password = kwargs.setdefault('password', 'P4sSW0rD')
 
     kwargs.setdefault('email', f'{username}@test.case')
