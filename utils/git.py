@@ -3,7 +3,7 @@ import subprocess
 
 
 def get_commit(path, revision='HEAD'):
-    if os.environ.get('CI_COMMIT_SHA'):
+    if 'CI_COMMIT_SHA' in os.environ:
         return os.environ.get('CI_COMMIT_SHA')
 
     path = os.path.abspath(path)
