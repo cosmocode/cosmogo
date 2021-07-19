@@ -3,7 +3,8 @@ import json
 from functools import lru_cache
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.contrib.staticfiles.finders import find as find_static_file
+from django.core.exceptions import ImproperlyConfigured, SuspiciousFileOperation
 
 
 def get_mapping(path):
@@ -12,11 +13,19 @@ def get_mapping(path):
     """
 
     try:
-        with open(path, 'r') as fp:
+        filepath = find_static_file(path) or path
+    except SuspiciousFileOperation:
+        raise ImproperlyConfigured(
+            'Your WebPack assets map file is configured with an absolute path. '
+            'Please move it into a static directory and use a relative path.'
+        )
+
+    try:
+        with open(filepath, 'r') as fp:
             return json.load(fp)
     except FileNotFoundError:
         if settings.DEBUG:
-            raise ImproperlyConfigured(f'{path} not found. Please generate assets with webpack.')
+            raise ImproperlyConfigured(f'{filepath} not found. Please generate assets with WebPack.')
 
         return {}
 
@@ -30,4 +39,4 @@ def get_asset(name, path=None):
     Returns the asset path for a given asset name.
     """
 
-    return get_mapping(path or settings.WEBPACK_ASSETS_MAP_PATH).get(f'{name}')
+    return get_mapping(path or getattr(settings, 'WEBPACK_ASSETS_MAP_PATH', None) or 'assets.map.json').get(f'{name}')
