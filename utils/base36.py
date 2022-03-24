@@ -10,8 +10,8 @@ def encode(value, alphabet=ALPHABET):
     """
 
     assert isinstance(value, int), 'value must be an integer'
-    assert not len(alphabet) < 36, 'the alphabet is to short'
-    assert not len(alphabet) > 36, 'the alphabet is to long'
+    assert not len(alphabet) < 36, 'the alphabet is too short'
+    assert not len(alphabet) > 36, 'the alphabet is too long'
     assert value >= 0, 'value must be greater zero'
 
     encoded = ''
