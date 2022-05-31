@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Union, List, Type
+from typing import Any, Iterable, Mapping, List, Union, Tuple, Type
 from unittest.mock import patch
 
 from django.apps import apps
@@ -7,9 +7,11 @@ from django.conf import settings
 from django.contrib import admin
 from django.core.management import call_command as django_call_command
 from django.db.models import Model
+from django.http import HttpResponse
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
+from django.utils.http import urlencode
 from django.utils.timezone import make_aware, is_aware
 
 from .tempdir import maketempdir
@@ -76,8 +78,18 @@ def get_handler(test_case: SimpleTestCase, method: str = None, **data):
     return getattr(test_case.client, method)
 
 
-def request(test_case: SimpleTestCase, url: str, status_code: int = None, expected_url: str = None,
-            args: Args = None, kwargs: dict = None, headers: dict = None, msg: str = None, **data):
+def request(
+    test_case: SimpleTestCase,
+    url: str,
+    status_code: int = None,
+    expected_url: str = None,
+    args: Args = None,
+    kwargs: dict = None,
+    headers: dict = None,
+    msg: str = None,
+    query_params: Union[Mapping[str, Any], Iterable[Tuple[str, Any]]] = None,
+    **data
+) -> HttpResponse:
     """
     A helper to make a request with the test case's http client.
 
@@ -91,6 +103,10 @@ def request(test_case: SimpleTestCase, url: str, status_code: int = None, expect
 
     handler = get_handler(test_case, **data)
     url = get_url(url, args, kwargs)
+    query_string = urlencode(query_params, doseq=True) if query_params else ''
+    if query_string:
+        url = f'{url}?{query_string}'
+
     headers = headers or {}
 
     response = handler(url, data=data or None, **headers)
