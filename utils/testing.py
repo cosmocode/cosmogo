@@ -18,6 +18,7 @@ from .tempdir import maketempdir
 
 Data = Union[List[dict], dict]
 Args = Union[tuple, list]
+QueryParams = Union[Mapping[str, Any], Iterable[Tuple[str, Any]]]
 
 
 def call_command(*args, **kwargs):
@@ -87,7 +88,7 @@ def request(
     kwargs: dict = None,
     headers: dict = None,
     msg: str = None,
-    query_params: Union[Mapping[str, Any], Iterable[Tuple[str, Any]]] = None,
+    query_params: QueryParams = None,
     **data
 ) -> HttpResponse:
     """
