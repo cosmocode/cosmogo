@@ -151,7 +151,7 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
     def clean_fuzzy(entry: polib.POEntry):
         entry.flags.remove('fuzzy')
         entry.msgstr = ''
-        entry.msgstr_plural = {}
+        entry.msgstr_plural = {count: '' for count in entry.msgstr_plural}
         entry.previous_msgctxt = None
         entry.previous_msgid = None
         entry.previous_msgid_plural = None
