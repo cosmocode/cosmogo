@@ -1,5 +1,8 @@
+import datetime
+import random
+
 from contextlib import contextmanager
-from typing import Any, Iterable, Mapping, List, Union, Tuple, Type
+from typing import Any, Iterable, Mapping, List, Union, Tuple, Type, Optional
 from unittest.mock import patch
 
 from django.apps import apps
@@ -11,6 +14,7 @@ from django.http import HttpResponse
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
+from django.utils.formats import get_format
 from django.utils.http import urlencode
 from django.utils.timezone import make_aware, is_aware
 
@@ -125,6 +129,28 @@ def request(
         test_case.assertEqual(response.status_code, status_code, msg=msg)
 
     return response
+
+
+def build_split_datetime_field_data(value: Optional[datetime.datetime], field: str, prefix: str = None) -> dict:
+    """
+    Methods builds date & time data in a format the `SplitDateTimeWidget` expects it.
+    """
+
+    data = {}
+
+    if not value:
+        return data
+
+    formats = ('DATE_INPUT_FORMATS', 'TIME_INPUT_FORMATS')
+    template = prefix and f'{prefix}-{field}_%d' or f'{field}_%d'
+
+    for index, fmt in enumerate(formats):
+        fmts = get_format(fmt)
+        fmt = random.choice(fmts)
+        bit = value.strftime(fmt)
+        data[template % index] = bit
+
+    return data
 
 
 def build_formset_data(data: Data = None, prefix: str = None, total_forms: int = None, initial_forms: int = 0,
