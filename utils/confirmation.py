@@ -9,23 +9,39 @@ YES_NO = {
     'NO': False,
 }
 
-TRUE_FALSE = {
-    **YES_NO,
+ZERO_ONE = {
     1: True,
     '1': True,
+    0: False,
+    '0': False,
+}
+
+TRUE_FALSE = {
     True: True,
     'TRUE': True,
     'True': True,
     'true': True,
     't': True,
-    0: False,
-    '0': False,
     False: False,
     'FALSE': False,
     'False': False,
     'false': False,
     'f': False,
     None: False,
+}
+
+ON_OFF = {
+    'on': True,
+    'ON': True,
+    'off': False,
+    'OFF': False,
+}
+
+TRUTHY = {
+    **YES_NO,
+    **ZERO_ONE,
+    **TRUE_FALSE,
+    **ON_OFF,
 }
 
 

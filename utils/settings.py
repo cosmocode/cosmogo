@@ -1,19 +1,29 @@
 import os
 
-from .confirmation import TRUE_FALSE
+from .confirmation import TRUTHY
 from .git import get_commit
 
 
-def env(key, default=None, parser=str):
+def env(key, default=None, parser=None):
     value = os.environ.get(key)
 
     if value is None:
         return default
 
+    if parser is None:
+        if default is None:
+            parser = str
+        else:
+            parser = type(default)
+
+    if isinstance(parser, bool):
+        return truthy(value, default)
+
     return parser(value)
 
 
-truthy = TRUE_FALSE.get
+def truthy(value, default=False):
+    return TRUTHY.get(value, default)
 
 
 def debug_toolbar(apps, middleware, active=True, **config):
