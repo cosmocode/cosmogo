@@ -16,7 +16,7 @@ def env(key, default=None, parser=None):
         else:
             parser = type(default)
 
-    if isinstance(parser, bool):
+    if parser is bool:
         return truthy(value, default)
 
     return parser(value)
