@@ -1,17 +1,17 @@
 from requests import Session, RequestException
 
 
-class TimeOutSession(Session):
+class BaseTimeOutSession(Session):
 
     def __init__(self, timeout):
         self.timeout = timeout
 
-        super(TimeOutSession, self).__init__()
+        super(BaseTimeOutSession, self).__init__()
 
     def request(self, *args, **kwargs):
         kwargs.setdefault('timeout', self.timeout)
 
-        return super(TimeOutSession, self).request(*args, **kwargs)
+        return super(BaseTimeOutSession, self).request(*args, **kwargs)
 
     def json(self, method, url, **kwargs):
         try:
@@ -19,10 +19,20 @@ class TimeOutSession(Session):
         except RequestException as error:
             return None, error
 
-        if response.status_code == 204:
-            return True, None
+        if response and not (response.status_code == 204):
+            return response, response.json()
 
-        elif response.ok:
-            return True, response.json()
+        return response, None
 
-        return False, response
+
+class TimeOutSession(BaseTimeOutSession):
+
+    def json(self, method, url, **kwargs):
+        response, data = super(TimeOutSession, self).json(method, url, **kwargs)
+
+        if response is None:
+            return None, data
+        elif response:
+            return True, data
+        else:
+            return False, response
