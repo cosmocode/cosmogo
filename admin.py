@@ -1,8 +1,10 @@
+import json
+
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Model
 from django.http import Http404
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from cosmogo.utils.gettext import trans
 from cosmogo.utils.testing import admin_url
@@ -12,9 +14,14 @@ DEFAULT_LINK_TEMPLATE = '<a href="{url}">{label}</a>'
 
 def admin_link(obj: Model, view='change', site=None, label=None, template=DEFAULT_LINK_TEMPLATE):
     url = admin_url(type(obj), view, obj.pk, site=site)
-    link = template.format(url=url, obj=obj, label=label or obj)
 
-    return mark_safe(link)
+    return format_html(template, url=url, obj=obj, label=label or obj)
+
+
+def json_display(data):
+    content = json.dumps(data, indent=2)
+
+    return format_html('<pre style="padding: 0">{content}</pre>', content=content)
 
 
 class DefaultTabularInline(admin.TabularInline):
