@@ -74,7 +74,7 @@ def login(test_case: SimpleTestCase, user=None, password: str = None) -> bool:
     return test_case.client.login(username=user.username, password=password)
 
 
-def get_handler(test_case: SimpleTestCase, method: str = None, **data):
+def get_handler(test_case: SimpleTestCase, method: str = None, data=None):
     if data:
         method = str.lower(method or 'POST')
     else:
@@ -93,7 +93,9 @@ def request(
     headers: dict = None,
     msg: str = None,
     query_params: QueryParams = None,
-    **data
+    method: str = None,
+    data: dict = None,
+    **options,
 ) -> HttpResponse:
     """
     A helper to make a request with the test case's http client.
@@ -106,17 +108,16 @@ def request(
     When posting without parameters just pass post=True.
     """
 
-    handler = get_handler(test_case, **data)
+    data = data or options or None
+    handler = get_handler(test_case, method, data)
     url = get_url(url, args, kwargs)
-    query_string = urlencode(query_params, doseq=True) if query_params else ''
-    if query_string:
-        url = f'{url}?{query_string}'
+
+    if query_params:
+        url = f'{url}?%s' % urlencode(query_params, doseq=True)
 
     headers = headers or {}
-
-    response = handler(url, data=data or None, **headers)
-
     status_code = status_code or 200
+    response = handler(url, data=data, **headers)
     msg = msg or getattr(response, 'content', None)
 
     if expected_url:
