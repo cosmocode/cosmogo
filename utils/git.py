@@ -3,6 +3,9 @@ import subprocess
 
 
 def get_commit(path, revision='HEAD'):
+    if ci_commit_sha := os.getenv('CI_COMMIT_SHA'):
+        return ci_commit_sha
+
     path = os.path.abspath(path)
     command = ['git', 'rev-parse', revision]
 
