@@ -15,8 +15,16 @@ def last_modified(filepath: FilePath) -> Optional[datetime.datetime]:
     Returns the last modified of the given filepath converted to an aware datetime.
     """
 
+    return get_timestamp(filepath)
+
+
+def get_timestamp(filepath: FilePath, *, accessor=os.path.getmtime) -> Optional[datetime.datetime]:
+    """
+    Calls the given accessor function on the filepath and returns an aware datetime if available.
+    """
+
     try:
-        timestamp = os.path.getmtime(filepath)
+        timestamp = accessor(filepath)
     except FileNotFoundError:
         return None
 
