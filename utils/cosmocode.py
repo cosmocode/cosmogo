@@ -3,7 +3,8 @@ COSMOCODE_DOMAINS = (
     'cosmoco.de',
 )
 
-def is_from_cosmocode(user):  # type: (...) -> bool
+
+def is_from_cosmocode(user) -> bool:
     if user.is_anonymous or not user.is_superuser:
         return False
 
