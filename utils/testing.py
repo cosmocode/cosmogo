@@ -2,14 +2,12 @@ import datetime
 import random
 
 from contextlib import contextmanager
-from typing import Any, Iterable, Mapping, List, Union, Tuple, Type, Optional
+from typing import Any, Iterable, Mapping, List, Union, Tuple, Optional
 from unittest.mock import patch
 
 from django.apps import apps
 from django.conf import settings
-from django.contrib import admin
 from django.core.management import call_command as django_call_command
-from django.db.models import Model
 from django.http import HttpResponse
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
@@ -17,6 +15,10 @@ from django.utils.dateparse import parse_datetime
 from django.utils.formats import get_format
 from django.utils.http import urlencode
 from django.utils.timezone import make_aware, is_aware
+
+# import for backwards compatibility
+# noinspection PyUnresolvedReferences
+from cosmogo.admin import admin_url
 
 from .tempdir import maketempdir
 
@@ -184,18 +186,6 @@ def build_formset_data(data: Data = None, prefix: str = None, total_forms: int =
     }
 
     return {**management_form_data, **forms_data}
-
-
-def admin_url(model: Type[Model], view: str, *args, site=None, **kwargs) -> str:
-    """
-    Return an url to an admin view.
-    """
-
-    opts = model._meta
-    site = site or admin.site
-    info = site.name, opts.app_label, opts.model_name, view
-
-    return reverse('%s:%s_%s_%s' % info, args=args, kwargs=kwargs)
 
 
 def patch_now(now):

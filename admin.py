@@ -1,15 +1,29 @@
 import json
 
+from typing import Type
+
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Model
 from django.http import Http404
+from django.urls import reverse
 from django.utils.html import format_html
 
 from cosmogo.utils.gettext import trans
-from cosmogo.utils.testing import admin_url
 
 DEFAULT_LINK_TEMPLATE = '<a href="{url}">{label}</a>'
+
+
+def admin_url(model: Type[Model], view: str, *args, site=None, **kwargs) -> str:
+    """
+    Return an url to an admin view.
+    """
+
+    opts = model._meta
+    site = site or admin.site
+    info = site.name, opts.app_label, opts.model_name, view
+
+    return reverse('%s:%s_%s_%s' % info, args=args, kwargs=kwargs)
 
 
 def admin_link(obj: Model, view='change', site=None, label=None, template=DEFAULT_LINK_TEMPLATE):
