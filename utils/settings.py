@@ -1,5 +1,7 @@
 import os
 
+from django.conf import global_settings as default_settings
+
 from .confirmation import TRUTHY
 from .git import get_commit
 
@@ -75,6 +77,15 @@ def django_extensions(apps, active=True):
         apps += ['django_extensions']
 
     return apps
+
+
+def default_from_email(address=default_settings.DEFAULT_FROM_EMAIL, name=None):
+    address = env('DEFAULT_FROM_EMAIL_ADDRESS', address)
+
+    if name := env('DEFAULT_FROM_EMAIL_NAME', name):
+        address = f'{name} <{address}>'
+
+    return env('DEFAULT_FROM_EMAIL', address)
 
 
 def password_validators(*validators):
