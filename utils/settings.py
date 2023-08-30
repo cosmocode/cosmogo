@@ -1,6 +1,7 @@
 import os
 
 from django.conf import global_settings as default_settings
+from django.core.exceptions import ImproperlyConfigured
 
 from .confirmation import TRUTHY
 from .git import get_commit
@@ -85,7 +86,29 @@ def default_from_email(address=default_settings.DEFAULT_FROM_EMAIL, name=None):
     if name := env('DEFAULT_FROM_EMAIL_NAME', name):
         address = f'{name} <{address}>'
 
-    return env('DEFAULT_FROM_EMAIL', address)
+    address = env('DEFAULT_FROM_EMAIL', address)
+
+    return validate_from_email(address)
+
+
+def validate_from_email(address):
+    """
+    See django.core.mail.message.sanitize_address for reference.
+    """
+
+    from email.headerregistry import parser
+
+    try:
+        token, rest = parser.get_mailbox(address)
+    except Exception as error:
+        message = f'{error}'
+    else:
+        if rest:
+            message = f'only "{token}" could be parsed from "{address}".'
+        else:
+            return address
+
+    raise ImproperlyConfigured(f'Invalid from email: {message}')
 
 
 def password_validators(*validators):
