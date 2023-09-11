@@ -56,9 +56,9 @@ class APIViewMixIn(object):
         try:
             response = super(APIViewMixIn, self).dispatch(request, *args, **kwargs)
         except PermissionDenied as error:
-            data, success, message, code = self.evaluate(success=False, message=error, code=403)
+            data, success, message, code = self.evaluate(success=False, message=f'{error}', code=403)
         except Http404 as error:
-            data, success, message, code = self.evaluate(success=False, message=error, code=404)
+            data, success, message, code = self.evaluate(success=False, message=f'{error}', code=404)
         except NotImplementedError:
             return self.http_method_not_allowed(request, *args, **kwargs)
         except Exception as error:
@@ -108,7 +108,7 @@ class APIViewMixIn(object):
         else:
             cls.logger.error(msg, *args)
 
-        return cls.evaluate(success=False, message=error, code=500)
+        return cls.evaluate(success=False, message=f'{error}', code=500)
 
 
 APIViewMixin = APIViewMixIn
