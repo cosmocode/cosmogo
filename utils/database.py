@@ -1,6 +1,6 @@
 import re
 
-from django import forms
+from django import VERSION, forms
 from django.db import IntegrityError
 from django.db.transaction import get_connection, Atomic
 
@@ -20,8 +20,13 @@ class IntegrityToValidationError(Atomic):
         'sqlite': re.compile(r'UNIQUE constraint failed: (?P<table>.+)\.(?P<field>.+)', re.U | re.I),
     }
 
-    def __init__(self, messages, values=None, *, using=None):
-        super(IntegrityToValidationError, self).__init__(using=using, savepoint=True)
+    def __init__(self, messages, values=None, *, using=None, durable=False):
+        kwargs = {'using': using, 'savepoint': True}
+
+        if VERSION >= (3, 2):
+            kwargs['durable'] = durable
+
+        super(IntegrityToValidationError, self).__init__(**kwargs)
 
         connection = get_connection(using)
         pattern = self.patterns.get(connection.vendor)
