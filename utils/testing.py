@@ -8,10 +8,13 @@ from unittest.mock import patch
 from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command as django_call_command
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
+from django.http.response import HttpResponseRedirectBase, StreamingHttpResponse
 from django.shortcuts import resolve_url
-from django.test import SimpleTestCase, override_settings
-from django.urls import reverse
+from django.template import Context
+from django.template.response import TemplateResponse
+from django.test import Client, SimpleTestCase, override_settings
+from django.urls import reverse, ResolverMatch
 from django.utils.dateparse import parse_datetime
 from django.utils.formats import get_format
 from django.utils.http import urlencode
@@ -89,6 +92,26 @@ def get_handler(test_case: SimpleTestCase, method: str = None, data=None):
     return getattr(test_case.client, method)
 
 
+class TestClientResponse:
+    client: Client
+    request: HttpRequest
+    templates: list
+    context: Context
+    resolver_match: ResolverMatch
+
+    def json(self) -> Union[list, dict]:
+        pass
+
+
+Response = Union[
+    HttpResponse,
+    HttpResponseRedirectBase,
+    StreamingHttpResponse,
+    TemplateResponse,
+    TestClientResponse,
+]
+
+
 def request(
     test_case: SimpleTestCase,
     url: str,
@@ -102,7 +125,7 @@ def request(
     method: str = None,
     data: dict = None,
     **options,
-) -> HttpResponse:
+) -> Response:
     """
     A helper to make a request with the test case's http client.
 
