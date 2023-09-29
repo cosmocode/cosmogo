@@ -9,6 +9,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command as django_call_command
 from django.http import HttpResponse
+from django.shortcuts import resolve_url
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
@@ -58,7 +59,10 @@ def get_url(url: str, args: Args = None, kwargs: dict = None) -> str:
     Helper to reverse the given url name.
     """
 
-    return url if url.startswith('/') else reverse(url, args=args, kwargs=kwargs)
+    if args or kwargs:
+        return reverse(url, args=args, kwargs=kwargs)
+
+    return resolve_url(url)
 
 
 def login(test_case: SimpleTestCase, user=None, password: str = None) -> bool:
