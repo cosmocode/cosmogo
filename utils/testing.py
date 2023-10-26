@@ -8,6 +8,8 @@ from unittest.mock import patch
 from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command as django_call_command
+from django.db.models import Model
+from django.forms import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseRedirectBase, StreamingHttpResponse
 from django.shortcuts import resolve_url
@@ -213,6 +215,28 @@ def build_formset_data(data: Data = None, prefix: str = None, total_forms: int =
     }
 
     return {**management_form_data, **forms_data}
+
+
+def build_form_data(obj: Model, prefix: str = None, **kwargs) -> dict:
+    data = {**model_to_dict(obj), **kwargs}
+
+    if prefix:
+        return {f'{prefix}-{key}': serialize_form_data(value) for key, value in data.items()}
+
+    return serialize_form_data(data)
+
+
+def serialize_form_data(value):
+    if value is None:
+        return ''
+    elif isinstance(value, dict):
+        return {key: serialize_form_data(value) for key, value in value.items()}
+    elif isinstance(value, list):
+        return [serialize_form_data(value) for value in value]
+    elif isinstance(value, Model):
+        return serialize_form_data(value.pk)
+
+    return value
 
 
 def patch_now(now):
