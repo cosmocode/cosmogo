@@ -1,7 +1,7 @@
 from calendar import timegm
 from typing import Optional
 
-from django.http import HttpResponseBase
+from django.http.response import HttpResponseBase
 
 from .filepath import FilePath, last_modified as get_last_modified
 
