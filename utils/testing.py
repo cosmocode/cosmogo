@@ -59,6 +59,13 @@ def create_user(username: str, *, model=None, **kwargs):
     return user
 
 
+def create_superuser(username: str, **kwargs):
+    kwargs['is_superuser'] = True
+    kwargs['is_staff'] = True
+
+    return create_user(username, **kwargs)
+
+
 def get_url(url: str, args: Args = None, kwargs: dict = None) -> str:
     """
     Helper to reverse the given url name.
