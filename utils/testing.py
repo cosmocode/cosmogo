@@ -2,7 +2,7 @@ import datetime
 import random
 
 from contextlib import contextmanager
-from typing import Any, Iterable, Mapping, List, Union, Tuple, Optional
+from typing import Any, Iterable, Mapping, List, Union, Tuple, Optional, Protocol
 from unittest.mock import patch
 
 from django.apps import apps
@@ -66,7 +66,16 @@ def create_superuser(username: str, **kwargs):
     return create_user(username, **kwargs)
 
 
-def get_url(url: str, args: Args = None, kwargs: dict = None) -> str:
+class ObjectWithGetAbsoluteURLMethod(Protocol):
+
+    def get_absolute_url(self) -> str:
+        ...
+
+
+URL = Union[str, ObjectWithGetAbsoluteURLMethod]
+
+
+def get_url(url: URL, args: Args = None, kwargs: dict = None) -> str:
     """
     Helper to reverse the given url name.
     """
@@ -123,9 +132,9 @@ Response = Union[
 
 def request(
     test_case: SimpleTestCase,
-    url: str,
+    url: URL,
     status_code: int = None,
-    expected_url: str = None,
+    expected_url: URL = None,
     args: Args = None,
     kwargs: dict = None,
     headers: dict = None,
