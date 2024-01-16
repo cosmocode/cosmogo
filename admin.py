@@ -48,7 +48,13 @@ def admin_path(model_admin: admin.ModelAdmin, route, view, name):
 def admin_link(obj: Model, view='change', site=None, label=None, template=DEFAULT_LINK_TEMPLATE):
     url = admin_url(type(obj), view, obj.pk, site=site)
 
-    return format_html(template, url=url, obj=obj, label=label or obj)
+    return format_link(url, label=label or obj, obj=obj, template=template)
+
+
+def format_link(url, label=None, *, template=DEFAULT_LINK_TEMPLATE, **kwargs):
+    kwargs.setdefault('label', label or url)
+
+    return format_html(template, url=url, **kwargs)
 
 
 def admin_template_names(model: Type[Model], name: str, *, site=None):
