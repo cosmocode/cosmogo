@@ -13,6 +13,11 @@ ModelSet = Set[ModelType]
 
 
 class BaseAdminTestCase(TestCase):
+    """
+    Make sure to not directly import this class, or it will be executed itself.
+    Use `from cosmogo.test import admin` and `admin.BaseAdminTestCase` in you superclass list.
+    """
+
     exclude_models: ModelSet = set()
     exclude_models_changelist: ModelSet = set()
     exclude_models_add: ModelSet = set()
