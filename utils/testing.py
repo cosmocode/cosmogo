@@ -22,6 +22,11 @@ from django.utils.formats import get_format
 from django.utils.http import urlencode
 from django.utils.timezone import make_aware, is_aware
 
+try:
+    from rest_framework.response import Response as RestFrameworkResponse
+except ImportError:
+    from django.template.response import SimpleTemplateResponse as RestFrameworkResponse
+
 # import for backwards compatibility
 # noinspection PyUnresolvedReferences
 from cosmogo.admin import admin_url
@@ -132,6 +137,7 @@ Response = Union[
     StreamingHttpResponse,
     TemplateResponse,
     TestClientResponse,
+    RestFrameworkResponse,
 ]
 
 
