@@ -28,10 +28,6 @@ from cosmogo.admin import admin_url
 
 from .tempdir import maketempdir
 
-Data = Union[List[dict], dict]
-Args = Union[tuple, list]
-QueryParams = Union[Mapping[str, Any], Iterable[Tuple[str, Any]]]
-
 
 def call_command(*args, **kwargs):
     """
@@ -73,9 +69,11 @@ class ObjectWithGetAbsoluteURLMethod(Protocol):
 
 
 URL = Union[str, ObjectWithGetAbsoluteURLMethod]
+URLArgs = Union[tuple, list]
+URLKwargs = dict
 
 
-def get_url(url: URL, args: Args = None, kwargs: dict = None) -> str:
+def get_url(url: URL, args: URLArgs = None, kwargs: URLKwargs = None) -> str:
     """
     Helper to reverse the given url name.
     """
@@ -110,6 +108,13 @@ def get_handler(test_case: SimpleTestCase, method: str = None, data=None):
     return getattr(test_case.client, method)
 
 
+FormData = dict
+JSONDict = dict
+JSONList = list
+RequestData = FormData | JSONDict | JSONList
+QueryParams = Union[Mapping[str, Any], Iterable[Tuple[str, Any]]]
+
+
 class TestClientResponse:
     client: Client
     request: HttpRequest
@@ -135,13 +140,13 @@ def request(
     url: URL,
     status_code: int = None,
     expected_url: URL = None,
-    args: Args = None,
-    kwargs: dict = None,
+    args: URLArgs = None,
+    kwargs: URLKwargs = None,
     headers: dict = None,
     msg: str = None,
     query_params: QueryParams = None,
     method: str = None,
-    data: dict = None,
+    data: RequestData = None,
     **options,
 ) -> Response:
     """
@@ -201,7 +206,10 @@ def build_split_datetime_field_data(value: Optional[datetime.datetime], field: s
     return data
 
 
-def build_formset_data(data: Data = None, prefix: str = None, total_forms: int = None, initial_forms: int = 0,
+FormSetData = Union[List[dict], dict]
+
+
+def build_formset_data(data: FormSetData = None, prefix: str = None, total_forms: int = None, initial_forms: int = 0,
                        max_forms: int = 1000, min_forms: int = 0) -> dict:
     """
     Method builds a dictionary of key value pairs needed for posting a complete formset.
