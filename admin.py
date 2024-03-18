@@ -11,6 +11,7 @@ from django.urls import reverse, path
 from django.utils.html import format_html
 
 from cosmogo.utils.gettext import trans
+from cosmogo.utils.url import get_absolute_url
 
 DEFAULT_LINK_TEMPLATE = '<a href="{url}">{label}</a>'
 
@@ -21,6 +22,10 @@ def admin_url(model: Type[Model], view: str, *args, site=None, **kwargs) -> str:
     """
 
     return reverse(admin_url_name(model, view, site=site), args=args, kwargs=kwargs)
+
+
+def absolute_admin_url(request, model: Type[Model], view: str, *args, site=None, **kwargs):
+    return get_absolute_url(request, admin_url_name(model, view, site=site), *args, **kwargs)
 
 
 def admin_redirect(model: Type[Model], view: str, *args, site=None, **kwargs) -> HttpResponseRedirect:
