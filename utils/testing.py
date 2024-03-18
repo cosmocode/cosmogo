@@ -116,7 +116,7 @@ def get_handler(test_case: SimpleTestCase, method: str = None, data=None):
 FormData = dict
 JSONDict = dict
 JSONList = list
-RequestData = FormData | JSONDict | JSONList
+RequestData = Union[FormData, JSONDict, JSONList]
 QueryParams = Union[Mapping[str, Any], Iterable[Tuple[str, Any]]]
 
 
