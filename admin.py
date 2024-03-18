@@ -43,11 +43,11 @@ def admin_view_name(model: Type[Model], view: str) -> str:
     return f'{model._meta.app_label}_{model._meta.model_name}_{view}'
 
 
-def admin_path(model_admin: admin.ModelAdmin, route, view, name):
+def admin_path(model_admin: admin.ModelAdmin, route, view, name, kwargs=None):
     name = admin_view_name(model_admin.model, name)
     view = model_admin.admin_site.admin_view(view)
 
-    return path(route, view, name=name)
+    return path(route, view, kwargs=kwargs, name=name)
 
 
 def admin_link(obj: Model, view='change', site=None, label=None, template=DEFAULT_LINK_TEMPLATE):
