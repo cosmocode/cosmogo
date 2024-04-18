@@ -8,6 +8,7 @@ import polib
 from django.conf import settings
 from django.core.management import BaseCommand, call_command
 from django.core.management.commands.compilemessages import Command as CompileMessagesCommand
+from django.utils.translation import to_locale
 
 from cosmogo.utils.path import cd
 
@@ -27,11 +28,11 @@ class GetTextCommandMixin:
         domain in the specified language.
         """
 
-        return str(cls.LOCALE_DIR / language / 'LC_MESSAGES' / f'{domain}.po')
+        return str(cls.LOCALE_DIR / to_locale(language) / 'LC_MESSAGES' / f'{domain}.po')
 
     @staticmethod
-    def key(entry) -> tuple:
-        return entry.msgid, entry.msgid_plural
+    def key(entry: polib.POEntry):
+        return entry.msgid_with_context
 
 
 class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
@@ -79,11 +80,12 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
         os.makedirs(self.LOCALE_DIR, exist_ok=True)
 
         languages = self.get_languages(languages)
+        locales = self.get_locales(languages)
         domains = self.get_domains(domains)
 
         for domain, extensions in domains:
             self.call_command(
-                locale=languages,
+                locale=locales,
                 domain=domain,
                 extensions=extensions,
                 ignore_patterns=self.IGNORE,
@@ -103,6 +105,14 @@ class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
         """
 
         return languages or self.language_codes
+
+    @staticmethod
+    def get_locales(languages):
+        """
+        Convert language codes to locale codes.
+        """
+
+        return [to_locale(language) for language in languages]
 
     def get_domains(self, domains):
         """
