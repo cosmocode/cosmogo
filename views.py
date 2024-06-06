@@ -69,7 +69,7 @@ class APIViewMixIn(object):
             elif isinstance(response, bool):
                 data, success, message, code = self.evaluate(success=response)
             elif isinstance(response, int) and 100 <= response < 700:
-                data, success, message, code = self.evaluate(code=response)
+                data, success, message, code = self.evaluate(success=response < 400, code=response)
             elif isinstance(response, tuple):
                 data, success, message, code = self.evaluate(*response)
             elif isinstance(response, dict):
