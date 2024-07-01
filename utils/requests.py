@@ -1,5 +1,11 @@
-from requests import Session, RequestException
+import shutil
+
+from pathlib import Path
+
+from requests import Session, RequestException, api
 from requests.auth import AuthBase
+
+from .tempdir import maketempdir
 
 
 class BearerAuth(AuthBase):
@@ -47,3 +53,17 @@ class TimeOutSession(BaseTimeOutSession):
             return True, data
         else:
             return False, response
+
+
+def download(url: str, destination: Path, *, session=api):
+    with maketempdir(prefix=destination.stem) as tempdir:
+        source = tempdir / destination.name
+
+        with open(source, 'wb') as tmp:
+            with session.get(url, stream=True) as response:
+                response.raise_for_status()
+
+                for chunk in response.iter_content(chunk_size=None):
+                    tmp.write(chunk)
+
+        return shutil.move(source, destination)
