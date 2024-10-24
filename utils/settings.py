@@ -25,6 +25,21 @@ def env(key, default=None, parser=None):
     return parser(value)
 
 
+def setdefault(key, default, value: str = None, parser=None):
+    if value is None:
+        value = f'{default}'
+
+    value = os.environ.setdefault(key, value)
+
+    if parser is None:
+        parser = type(default)
+
+    if parser is bool:
+        return truthy(value, default)
+
+    return parser(value)
+
+
 def truthy(value, default=False):
     return TRUTHY.get(value, default)
 
