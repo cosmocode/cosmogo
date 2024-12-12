@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from typing import List
 
+import django
 import polib
 
 from django.conf import settings
@@ -36,7 +37,7 @@ class GetTextCommandMixin:
 
 
 class UpdateTranslationsCommand(GetTextCommandMixin, BaseCommand):
-    requires_system_checks = False
+    requires_system_checks = False if django.VERSION < (3, 2) else []
 
     IGNORE = [
         'static',
