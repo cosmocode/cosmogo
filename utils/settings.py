@@ -59,13 +59,13 @@ def debug_toolbar(apps, middleware, active=True, **config):
     if active:
         apps = apps + [getattr(debug_toolbar, 'default_app_config', 'debug_toolbar')]
         middleware = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + middleware
-        config = dict(
+        config = {
             # Hide the debug toolbar by default.
-            SHOW_COLLAPSED=True,
+            'SHOW_COLLAPSED': True,
 
             # We disable the rarely used panels
             # by default to improve performance.
-            DISABLE_PANELS={
+            'DISABLE_PANELS': {
                 'debug_toolbar.panels.versions.VersionsPanel',
                 'debug_toolbar.panels.timer.TimerPanel',
                 'debug_toolbar.panels.settings.SettingsPanel',
@@ -78,7 +78,8 @@ def debug_toolbar(apps, middleware, active=True, **config):
                 'debug_toolbar.panels.logging.LoggingPanel',
                 'debug_toolbar.panels.redirects.RedirectsPanel',
             },
-        )
+            **config,
+        }
 
     return apps, middleware, ips, active, config
 
