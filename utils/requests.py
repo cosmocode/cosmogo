@@ -8,14 +8,20 @@ from requests.auth import AuthBase
 from .tempdir import maketempdir
 
 
-class BearerAuth(AuthBase):
+class TokenAuth(AuthBase):
+    keyword = 'Token'
 
-    def __init__(self, token):
+    def __init__(self, token, keyword=None):
         self.token = token
+        self.keyword = keyword or self.keyword
 
     def __call__(self, request):
-        request.headers['Authorization'] = f'Bearer {self.token}'
+        request.headers['Authorization'] = f'{self.keyword} {self.token}'
         return request
+
+
+class BearerAuth(TokenAuth):
+    keyword = 'Bearer'
 
 
 class BaseTimeOutSession(Session):
