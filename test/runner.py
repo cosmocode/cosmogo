@@ -5,6 +5,8 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.test.runner import DiscoverRunner
 
+from cosmogo.utils.testing import override_dns_name
+
 
 class CosmoCodeTestRunner(DiscoverRunner):
 
@@ -21,3 +23,8 @@ class CosmoCodeTestRunner(DiscoverRunner):
     def teardown_test_environment(self, **kwargs):
         DiscoverRunner.teardown_test_environment(self, **kwargs)
         shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
+
+    if DNS_NAME := getattr(settings, 'TEST_RUNNER_OVERRIDE_DNS_NAME', None):
+        def run_tests(self, test_labels, extra_tests=None, **kwargs):
+            with override_dns_name(self.DNS_NAME):
+                return DiscoverRunner.run_tests(self, test_labels, extra_tests=extra_tests, **kwargs)
