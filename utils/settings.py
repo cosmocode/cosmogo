@@ -168,6 +168,7 @@ def configure_sentry(dsn, environment, release, celery=False, **kwargs):
 
 
 REDIS_DEFAULTS = {
+    'scheme': 'redis',
     'host': 'localhost',
     'port': 6379,
     'db': 0,
@@ -182,4 +183,4 @@ def redis(*, prefix='REDIS', **kwargs):
         variable = str.upper(f'{prefix}_{name}')
         defaults[name] = env(variable, default)
 
-    return 'redis://%(host)s:%(port)s/%(db)s' % defaults
+    return '%(scheme)s://%(host)s:%(port)s/%(db)s' % defaults
