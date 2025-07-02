@@ -269,13 +269,13 @@ def serialize_form_data(value):
     return value
 
 
-def patch_now(now):
+def patch_now(now, *, target='django.utils.timezone.now'):
     value = parse_datetime(now)
 
     if not is_aware(value):
         value = make_aware(value)
 
-    return patch('django.utils.timezone.now', return_value=value)
+    return patch(target, return_value=value)
 
 
 @contextmanager
