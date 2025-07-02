@@ -6,6 +6,12 @@ from typing import Optional, Union
 
 from django.utils import timezone
 
+try:
+    UTC = datetime.timezone.utc
+except AttributeError:
+    UTC = timezone.utc
+
+
 FilePath = Union[PurePath, str]
 Delta = Union[int, datetime.timedelta]
 
@@ -30,7 +36,7 @@ def get_timestamp(filepath: FilePath, *, accessor=os.path.getmtime) -> Optional[
 
     naive = datetime.datetime.utcfromtimestamp(timestamp)
 
-    return timezone.make_aware(naive, timezone=timezone.utc)
+    return naive.replace(tzinfo=UTC)
 
 
 def is_outdated(filepath: FilePath, delta: Delta) -> bool:
@@ -47,6 +53,6 @@ def is_outdated(filepath: FilePath, delta: Delta) -> bool:
     if isinstance(delta, int):
         delta = datetime.timedelta(seconds=delta)
 
-    now = timezone.localtime(timezone=timezone.utc)
+    now = timezone.localtime(timezone=UTC)
 
     return timestamp < now - delta
