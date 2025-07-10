@@ -34,9 +34,7 @@ def get_timestamp(filepath: FilePath, *, accessor=os.path.getmtime) -> Optional[
     except FileNotFoundError:
         return None
 
-    naive = datetime.datetime.utcfromtimestamp(timestamp)
-
-    return naive.replace(tzinfo=UTC)
+    return datetime.datetime.fromtimestamp(timestamp, UTC)
 
 
 def is_outdated(filepath: FilePath, delta: Delta) -> bool:
