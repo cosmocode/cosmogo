@@ -270,7 +270,7 @@ def serialize_form_data(value):
 
 
 def patch_now(now, *, target='django.utils.timezone.now'):
-    value = parse_datetime(now)
+    value = parse_datetime(now) if isinstance(now, str) else now
 
     if not is_aware(value):
         value = make_aware(value)
