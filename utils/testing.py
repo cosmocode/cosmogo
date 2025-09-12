@@ -153,6 +153,7 @@ def request(
     query_params: QueryParams = None,
     method: str = None,
     data: RequestData = None,
+    content_type: str = None,
     **options,
 ) -> Response:
     """
@@ -174,6 +175,9 @@ def request(
         url = f'{url}?%s' % urlencode(query_params, doseq=True)
 
     headers = headers or {}
+    if content_type is not None:
+        headers['content_type'] = content_type
+
     status_code = status_code or 200
     response = handler(url, data=data, **headers)
     msg = msg or getattr(response, 'content', None)
