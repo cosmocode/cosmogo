@@ -29,7 +29,7 @@ except ImportError:
 
 # import for backwards compatibility
 # noinspection PyUnresolvedReferences
-from cosmogo.admin import admin_url
+from cosmogo.admin import admin_url  # noqa: F401
 
 from .tempdir import maketempdir
 

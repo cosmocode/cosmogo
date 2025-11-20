@@ -89,7 +89,7 @@ def debug_toolbar(apps, middleware, active=True, **config):
 
 def django_extensions(apps, active=True):
     try:
-        import django_extensions
+        import django_extensions  # noqa: F401
     except ImportError:
         active = False
 
