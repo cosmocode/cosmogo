@@ -10,8 +10,8 @@ from cosmogo.utils.migrations import disable_auto_now
 
 class UpdateQuerySet(models.QuerySet):
 
-    def get_for_update(self, *, nowait=False, skip_locked=False, of=(), **kwargs):
-        return self.select_for_update(nowait=nowait, skip_locked=skip_locked, of=of).get(**kwargs)
+    def get_for_update(self, *, nowait=False, skip_locked=False, of=(), no_key=False, **kwargs):
+        return self.select_for_update(nowait=nowait, skip_locked=skip_locked, of=of, no_key=no_key).get(**kwargs)
 
 
 class UpdateModel(models.Model):
