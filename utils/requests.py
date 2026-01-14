@@ -15,6 +15,15 @@ class TokenAuth(AuthBase):
         self.token = token
         self.keyword = keyword or self.keyword
 
+    def __eq__(self, other):
+        return (
+            self.keyword == getattr(other, 'keyword', None) and
+            self.token == getattr(other, 'token', None)
+        )
+
+    def __ne__(self, other):
+        return not self == other
+
     def __call__(self, request):
         request.headers['Authorization'] = f'{self.keyword} {self.token}'
         return request
